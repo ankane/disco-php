@@ -307,6 +307,16 @@ final class RecommenderTest extends TestCase
         $recommender->userRecs(1);
     }
 
+    public function testFitMultiple()
+    {
+        $recommender = new Disco\Recommender();
+        $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 5]]);
+        $recommender->fit([['user_id' => 2, 'item_id' => 2]]);
+        $this->assertEquals([2], $recommender->userIds());
+        $this->assertEquals([2], $recommender->itemIds());
+        $this->assertLessThan(1, $recommender->predict([['user_id' => 2, 'item_id' => 2]])[0]);
+    }
+
     private function sort($v)
     {
         sort($v);
