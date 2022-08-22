@@ -33,7 +33,7 @@ $recommender->fit([
 ]);
 ```
 
-> IDs can be integers, strings, or any other data type
+> IDs can be integers or strings
 
 If users don’t rate items directly (for instance, they’re purchasing items or reading posts), this is known as implicit feedback. Leave out the rating.
 
