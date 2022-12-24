@@ -4,10 +4,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: composer install
-    - uses: actions/cache@v2
-      with:
-        path: ~/.disco
-        key: disco
-    - run: composer test
+      - uses: actions/checkout@v3
+      - run: composer install
+      - uses: actions/cache@v3
+        with:
+          path: ~/.disco
+          key: disco
+      - run: composer test
