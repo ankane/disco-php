@@ -100,6 +100,12 @@ $recommender->fit($data);
 $recommender->itemRecs('Star Wars (1977)');
 ```
 
+## Storing Recommendations
+
+Save recommendations to your database.
+
+Alternatively, you can store only the factors and use a library like [pgvector-php](https://github.com/pgvector/pgvector-php). See an [example](https://github.com/pgvector/pgvector-php/blob/master/examples/disco/example.php).
+
 ## Algorithms
 
 Disco uses high-performance matrix factorization.
