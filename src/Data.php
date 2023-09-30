@@ -21,7 +21,7 @@ class Data
         $movies = [];
         if (($handle = fopen($itemPath, 'r')) !== false) {
             while (($row = fgetcsv($handle, separator: '|')) !== false) {
-                $movies[$row[0]] = $row[1];
+                $movies[$row[0]] = mb_convert_encoding($row[1], 'UTF-8', 'ISO-8859-1');
             }
             fclose($handle);
         }
