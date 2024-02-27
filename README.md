@@ -6,7 +6,7 @@
 - Works with explicit and implicit feedback
 - Uses high-performance matrix factorization
 
-[![Build Status](https://github.com/ankane/disco-php/workflows/build/badge.svg?branch=master)](https://github.com/ankane/disco-php/actions)
+[![Build Status](https://github.com/ankane/disco-php/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/disco-php/actions)
 
 ## Installation
 
