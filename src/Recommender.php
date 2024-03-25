@@ -4,21 +4,20 @@ namespace Disco;
 
 class Recommender
 {
-    // TODO make private in 0.2.0
-    public $factors;
-    public $epochs;
-    public $verbose;
-    public $userMap;
-    public $itemMap;
-    public $globalMean;
-    public $implicit;
-    public $rated;
-    public $minRating;
-    public $maxRating;
-    public $userFactors;
-    public $itemFactors;
-    public $normalizedUserFactors;
-    public $normalizedItemFactors;
+    private $factors;
+    private $epochs;
+    private $verbose;
+    private $userMap;
+    private $itemMap;
+    private $globalMean;
+    private $implicit;
+    private $rated;
+    private $minRating;
+    private $maxRating;
+    private $userFactors;
+    private $itemFactors;
+    private $normalizedUserFactors;
+    private $normalizedItemFactors;
 
     public function __construct($factors = 8, $epochs = 20, $verbose = null)
     {
