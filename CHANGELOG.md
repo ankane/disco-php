@@ -1,5 +1,6 @@
 ## 0.2.0 (unreleased)
 
+- Reduced memory for `itemRecs` and `similarUsers`
 - Dropped support for PHP < 8.1
 
 ## 0.1.1 (2023-02-11)

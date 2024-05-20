@@ -16,8 +16,8 @@ class Recommender
     private $maxRating;
     private $userFactors;
     private $itemFactors;
-    private $normalizedUserFactors;
-    private $normalizedItemFactors;
+    private $userNorms;
+    private $itemNorms;
 
     public function __construct($factors = 8, $epochs = 20, $verbose = null)
     {
@@ -108,8 +108,8 @@ class Recommender
         $this->userFactors = $model->p();
         $this->itemFactors = $model->q();
 
-        $this->normalizedUserFactors = null;
-        $this->normalizedItemFactors = null;
+        $this->userNorms = $this->calculateNorms($this->userFactors);
+        $this->itemNorms = $this->calculateNorms($this->itemFactors);
     }
 
     public function predict($data)
@@ -206,13 +206,13 @@ class Recommender
     public function itemRecs($itemId, $count = 5)
     {
         $this->checkFit();
-        return $this->similar($itemId, 'item_id', $this->itemMap, $this->normalizedItemFactors(), $count);
+        return $this->similar($itemId, 'item_id', $this->itemMap, $this->itemFactors, $this->itemNorms, $count);
     }
 
     public function similarUsers($userId, $count = 5)
     {
         $this->checkFit();
-        return $this->similar($userId, 'user_id', $this->userMap, $this->normalizedUserFactors(), $count);
+        return $this->similar($userId, 'user_id', $this->userMap, $this->userFactors, $this->userNorms, $count);
     }
 
     public function userIds()
@@ -250,37 +250,19 @@ class Recommender
         }
     }
 
-    private function normalizedUserFactors()
+    private function calculateNorms($factors)
     {
-        return ($this->normalizedUserFactors ??= $this->normalize($this->userFactors));
+        return array_map(fn ($row) => $this->norm($row), $factors);
     }
 
-    private function normalizedItemFactors()
-    {
-        return ($this->normalizedItemFactors ??= $this->normalize($this->itemFactors));
-    }
-
-    private function normalize($factors)
-    {
-        return array_map(
-            function ($row) {
-                $norm = $this->norm($row);
-                if ($norm == 0) {
-                    return $row;
-                }
-                return array_map(fn ($v) => $v / $norm, $row);
-            },
-            $factors
-        );
-    }
-
-    private function similar($id, $key, $map, $normFactors, $count)
+    private function similar($id, $key, $map, $factors, $norms, $count)
     {
         $i = $map[$id] ?? null;
 
         if (!is_null($i)) { // && norm_factors.shape[0] > 1
-            $b = $normFactors[$i];
-            $predictions = array_map(fn ($a) => $this->innerProduct($a, $b), $normFactors);
+            $b = $factors[$i];
+            $bNorm = $norms[$i];
+            $predictions = array_map(fn ($a, $aNorm) => $this->innerProduct($a, $b) / max($aNorm * $bNorm, PHP_FLOAT_EPSILON), $factors, $norms);
             $indexes = $this->argmax($predictions);
             if (!is_null($count)) {
                 $indexes = array_slice($indexes, 0, min($count + 1, count($indexes)));
