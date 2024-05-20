@@ -108,8 +108,8 @@ class Recommender
         $this->userFactors = $model->p();
         $this->itemFactors = $model->q();
 
-        $this->userNorms = $this->calculateNorms($this->userFactors);
-        $this->itemNorms = $this->calculateNorms($this->itemFactors);
+        $this->userNorms = null;
+        $this->itemNorms = null;
     }
 
     public function predict($data)
@@ -206,13 +206,13 @@ class Recommender
     public function itemRecs($itemId, $count = 5)
     {
         $this->checkFit();
-        return $this->similar($itemId, 'item_id', $this->itemMap, $this->itemFactors, $this->itemNorms, $count);
+        return $this->similar($itemId, 'item_id', $this->itemMap, $this->itemFactors, $this->itemNorms(), $count);
     }
 
     public function similarUsers($userId, $count = 5)
     {
         $this->checkFit();
-        return $this->similar($userId, 'user_id', $this->userMap, $this->userFactors, $this->userNorms, $count);
+        return $this->similar($userId, 'user_id', $this->userMap, $this->userFactors, $this->userNorms(), $count);
     }
 
     public function userIds()
@@ -250,7 +250,17 @@ class Recommender
         }
     }
 
-    private function calculateNorms($factors)
+    private function userNorms()
+    {
+        return ($this->userNorms ??= $this->norms($this->userFactors));
+    }
+
+    private function itemNorms()
+    {
+        return ($this->itemNorms ??= $this->norms($this->itemFactors));
+    }
+
+    private function norms($factors)
     {
         return array_map(fn ($row) => $this->norm($row), $factors);
     }
