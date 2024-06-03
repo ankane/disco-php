@@ -1,4 +1,4 @@
-## 0.2.0 (unreleased)
+## 0.2.0 (2024-06-02)
 
 - Reduced memory for `itemRecs` and `similarUsers`
 - Dropped support for PHP < 8.1
