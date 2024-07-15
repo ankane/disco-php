@@ -6,13 +6,13 @@ class Data
 {
     public static function loadMovieLens()
     {
-        $itemPath = static::downloadFile(
+        $itemPath = self::downloadFile(
             'ml-100k/u.item',
             'https://files.grouplens.org/datasets/movielens/ml-100k/u.item',
             '553841ebc7de3a0fd0d6b62a204ea30c1e651aacfb2814c7a6584ac52f2c5701'
         );
 
-        $dataPath = static::downloadFile(
+        $dataPath = self::downloadFile(
             'ml-100k/u.data',
             'https://files.grouplens.org/datasets/movielens/ml-100k/u.data',
             '06416e597f82b7342361e41163890c81036900f418ad91315590814211dca490'
@@ -44,7 +44,7 @@ class Data
     private static function downloadFile($fname, $origin, $fileHash)
     {
         $home = getenv('HOME');
-        if (is_null($home)) {
+        if ($home == false) {
             throw new Exception('No HOME');
         }
 
