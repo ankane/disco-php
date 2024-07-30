@@ -259,7 +259,6 @@ class Recommender
         $userIds = array_keys($this->userMap);
         $itemIds = array_keys($this->itemMap);
     
-        // Handle specific user or item
         if ($specificUserId !== null) {
             if (!isset($this->userMap[$specificUserId])) {
                 throw new \InvalidArgumentException('The specified user ID does not exist');
