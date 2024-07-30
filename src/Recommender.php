@@ -250,6 +250,41 @@ class Recommender
         }
     }
 
+    public function getUserItemCombinations($start = 0, $end = null)
+    {
+        $combinations = [];
+        
+        $this->checkFit();
+
+        $userIds = array_keys($this->userMap);
+        $itemIds = array_keys($this->itemMap);
+
+        $totalCombinations = count($userIds) * count($itemIds);
+
+        if ($end === null || $end > $totalCombinations) {
+            $end = $totalCombinations;
+        }
+
+        if ($start < 0 || $end < 0 || $start >= $end || $start >= $totalCombinations) {
+            throw new \InvalidArgumentException('Invalid start or end index');
+        }
+
+        $combinationCount = 0;
+        foreach ($userIds as $userId) {
+            foreach ($itemIds as $itemId) {
+                if ($combinationCount >= $start && $combinationCount < $end) {
+                    $combinations[] = ['user_id' => $userId, 'item_id' => $itemId];
+                }
+                $combinationCount++;
+
+                if ($combinationCount >= $end) {
+                    return $combinations;
+                }
+            }
+        }
+        return $combinations;
+    }
+    
     private function userNorms()
     {
         return ($this->userNorms ??= $this->norms($this->userFactors));
