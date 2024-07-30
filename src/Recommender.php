@@ -250,7 +250,7 @@ class Recommender
         }
     }
 
-    public function getUserItemCombinations($start = 0, $end = null)
+    public function getUserItemCombinations($start = 0, $end = null, $specificUserId = null, $specificItemId = null)
     {
         $combinations = [];
         
@@ -258,6 +258,20 @@ class Recommender
 
         $userIds = array_keys($this->userMap);
         $itemIds = array_keys($this->itemMap);
+
+        if ($specificUserId !== null) {
+            if (!isset($this->userMap[$specificUserId])) {
+                throw new \InvalidArgumentException('Specified user ID does not exist');
+            }
+            $userIds = [$specificUserId];
+        }
+
+        if ($specificItemId !== null) {
+            if (!isset($this->itemMap[$specificItemId])) {
+                throw new \InvalidArgumentException('Specified item ID does not exist');
+            }
+            $itemIds = [$specificItemId];
+        }
 
         $totalCombinations = count($userIds) * count($itemIds);
 
