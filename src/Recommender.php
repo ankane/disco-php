@@ -250,6 +250,47 @@ class Recommender
         }
     }
 
+    public function saveModel($filename)
+    {
+        $data = [
+            'factors' => $this->factors,
+            'epochs' => $this->epochs,
+            'verbose' => $this->verbose,
+            'userMap' => $this->userMap,
+            'itemMap' => $this->itemMap,
+            'globalMean' => $this->globalMean,
+            'implicit' => $this->implicit,
+            'rated' => $this->rated,
+            'minRating' => $this->minRating,
+            'maxRating' => $this->maxRating,
+            'userFactors' => $this->userFactors,
+            'itemFactors' => $this->itemFactors,
+        ];
+
+        file_put_contents($filename, serialize($data));
+    }
+
+    public function loadModel($filename)
+    {
+        $data = unserialize(file_get_contents($filename));
+
+        $this->factors = $data['factors'];
+        $this->epochs = $data['epochs'];
+        $this->verbose = $data['verbose'];
+        $this->userMap = $data['userMap'];
+        $this->itemMap = $data['itemMap'];
+        $this->globalMean = $data['globalMean'];
+        $this->implicit = $data['implicit'];
+        $this->rated = $data['rated'];
+        $this->minRating = $data['minRating'];
+        $this->maxRating = $data['maxRating'];
+        $this->userFactors = $data['userFactors'];
+        $this->itemFactors = $data['itemFactors'];
+
+        $this->userNorms = null;
+        $this->itemNorms = null;
+    }
+    
     private function userNorms()
     {
         return ($this->userNorms ??= $this->norms($this->userFactors));
