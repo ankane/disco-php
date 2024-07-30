@@ -255,34 +255,41 @@ class Recommender
         $combinations = [];
         
         $this->checkFit();
-
+    
         $userIds = array_keys($this->userMap);
         $itemIds = array_keys($this->itemMap);
-
+    
+        // Handle specific user or item
         if ($specificUserId !== null) {
             if (!isset($this->userMap[$specificUserId])) {
-                throw new \InvalidArgumentException('Specified user ID does not exist');
+                throw new \InvalidArgumentException('The specified user ID does not exist');
             }
             $userIds = [$specificUserId];
         }
-
+    
         if ($specificItemId !== null) {
             if (!isset($this->itemMap[$specificItemId])) {
-                throw new \InvalidArgumentException('Specified item ID does not exist');
+                throw new \InvalidArgumentException('The specified item ID does not exist');
             }
             $itemIds = [$specificItemId];
         }
-
+    
+        if ($specificUserId !== null && $specificItemId !== null) {
+            if (count($userIds) === 1 && count($itemIds) === 1) {
+                return [['user_id' => $specificUserId, 'item_id' => $specificItemId]];
+            }
+        }
+    
         $totalCombinations = count($userIds) * count($itemIds);
-
+    
         if ($end === null || $end > $totalCombinations) {
             $end = $totalCombinations;
         }
-
+    
         if ($start < 0 || $end < 0 || $start >= $end || $start >= $totalCombinations) {
             throw new \InvalidArgumentException('Invalid start or end index');
         }
-
+    
         $combinationCount = 0;
         foreach ($userIds as $userId) {
             foreach ($itemIds as $itemId) {
@@ -290,7 +297,7 @@ class Recommender
                     $combinations[] = ['user_id' => $userId, 'item_id' => $itemId];
                 }
                 $combinationCount++;
-
+    
                 if ($combinationCount >= $end) {
                     return $combinations;
                 }
