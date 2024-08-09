@@ -2,12 +2,16 @@
 
 use PHPUnit\Framework\TestCase;
 
+use Disco\Data;
+use Disco\Metrics;
+use Disco\Recommender;
+
 final class RecommenderTest extends TestCase
 {
     public function testExplicit()
     {
-        $data = Disco\Data::loadMovieLens();
-        $recommender = new Disco\Recommender(factors: 20);
+        $data = Data::loadMovieLens();
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
 
         $expected = array_sum(array_map(fn ($v) => $v['rating'], $data)) / count($data);
@@ -29,12 +33,12 @@ final class RecommenderTest extends TestCase
 
     public function testImplicit()
     {
-        $data = Disco\Data::loadMovieLens();
+        $data = Data::loadMovieLens();
         foreach ($data as &$r) {
             unset($r['rating']);
         }
 
-        $recommender = new Disco\Recommender(factors: 20);
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
 
         $this->assertEqualsWithDelta(0, $recommender->globalMean(), 0.001);
@@ -47,7 +51,7 @@ final class RecommenderTest extends TestCase
 
     public function testExamples()
     {
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([
             ['user_id' => 1, 'item_id' => 1, 'rating' => 5],
             ['user_id' => 2, 'item_id' => 1, 'rating' => 3]
@@ -55,7 +59,7 @@ final class RecommenderTest extends TestCase
         $recommender->userRecs(1);
         $recommender->itemRecs(1);
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([
             ['user_id' => 1, 'item_id' => 1],
             ['user_id' => 2, 'item_id' => 1]
@@ -78,7 +82,7 @@ final class RecommenderTest extends TestCase
             ['user_id' => 2, 'item_id' => 'E'],
             ['user_id' => 2, 'item_id' => 'F']
         ];
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit($data);
         $this->assertEquals(['E', 'F'], $this->sort(array_map(fn ($r) => $r['item_id'], $recommender->userRecs(1))));
         $this->assertEquals(['A', 'B'], $this->sort(array_map(fn ($r) => $r['item_id'], $recommender->userRecs(2))));
@@ -91,15 +95,15 @@ final class RecommenderTest extends TestCase
             ['user_id' => 1, 'item_id' => 'B'],
             ['user_id' => 2, 'item_id' => 'C']
         ];
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit($data);
         $this->assertEquals(['B', 'C'], array_map(fn ($r) => $r['item_id'], $recommender->itemRecs('A')));
     }
 
     public function testSimilarUsers()
     {
-        $data = Disco\Data::loadMovieLens();
-        $recommender = new Disco\Recommender(factors: 20);
+        $data = Data::loadMovieLens();
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
 
         $this->assertNotEmpty($recommender->similarUsers($data[0]['user_id']));
@@ -113,7 +117,7 @@ final class RecommenderTest extends TestCase
             ['user_id' => 1, 'item_id' => 'B'],
             ['user_id' => 2, 'item_id' => 'B']
         ];
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit($data);
         $this->assertEquals([1, 2], $recommender->userIds());
         $this->assertEquals(['A', 'B'], $recommender->itemIds());
@@ -126,7 +130,7 @@ final class RecommenderTest extends TestCase
             ['user_id' => 1, 'item_id' => 'B'],
             ['user_id' => 2, 'item_id' => 'B']
         ];
-        $recommender = new Disco\Recommender(factors: 20);
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
 
         $this->assertCount(20, $recommender->userFactors(1));
@@ -138,30 +142,30 @@ final class RecommenderTest extends TestCase
 
     public function testValidationSetExplicit()
     {
-        $data = Disco\Data::loadMovieLens();
+        $data = Data::loadMovieLens();
         $trainSet = array_slice($data, 0, 80000);
         $validationSet = array_slice($data, 80000);
-        $recommender = new Disco\Recommender(factors: 20, verbose: false);
+        $recommender = new Recommender(factors: 20, verbose: false);
         $recommender->fit($trainSet, validationSet: $validationSet);
         $this->assertNotEqualsWithDelta(0, $recommender->globalMean(), 0.001);
     }
 
     public function testValidationSetImplicit()
     {
-        $data = Disco\Data::loadMovieLens();
+        $data = Data::loadMovieLens();
         foreach ($data as &$r) {
             unset($r['rating']);
         }
         $trainSet = array_slice($data, 0, 80000);
         $validationSet = array_slice($data, 80000);
-        $recommender = new Disco\Recommender(factors: 20, verbose: false);
+        $recommender = new Recommender(factors: 20, verbose: false);
         $recommender->fit($trainSet, validationSet: $validationSet);
         $this->assertEqualsWithDelta(0, $recommender->globalMean(), 0.001);
     }
 
     public function testUserRecsItemIds()
     {
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([
             ['user_id' => 1, 'item_id' => 1, 'rating' => 5],
             ['user_id' => 1, 'item_id' => 2, 'rating' => 3]
@@ -171,7 +175,7 @@ final class RecommenderTest extends TestCase
 
     public function testUserRecsNewUser()
     {
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([
             ['user_id' => 1, 'item_id' => 1, 'rating' => 5],
             ['user_id' => 1, 'item_id' => 2, 'rating' => 3]
@@ -182,7 +186,7 @@ final class RecommenderTest extends TestCase
     // only return items that exist
     public function testUserRecsNewItem()
     {
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([
             ['user_id' => 1, 'item_id' => 1, 'rating' => 5],
             ['user_id' => 1, 'item_id' => 2, 'rating' => 3]
@@ -192,40 +196,40 @@ final class RecommenderTest extends TestCase
 
     public function testPredict()
     {
-        $data = Disco\Data::loadMovieLens();
+        $data = Data::loadMovieLens();
         // TODO seed?
         shuffle($data);
 
         $trainSet = array_slice($data, 0, 80000);
         $validSet = array_slice($data, 80000);
 
-        $recommender = new Disco\Recommender(factors: 20, verbose: false);
+        $recommender = new Recommender(factors: 20, verbose: false);
         $recommender->fit($trainSet, validationSet: $validSet);
 
         $predictions = $recommender->predict($validSet);
-        $this->assertEqualsWithDelta(0.91, Disco\Metrics::rmse(array_map(fn ($r) => $r['rating'], $validSet), $predictions), 0.015);
+        $this->assertEqualsWithDelta(0.91, Metrics::rmse(array_map(fn ($r) => $r['rating'], $validSet), $predictions), 0.015);
     }
 
     public function testPredictNewUser()
     {
-        $data = Disco\Data::loadMovieLens();
-        $recommender = new Disco\Recommender(factors: 20);
+        $data = Data::loadMovieLens();
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
         $this->assertEquals([$recommender->globalMean()], $recommender->predict([['user_id' => 100000, 'item_id' => 'Star Wars (1977)']]));
     }
 
     public function testPredictNewItem()
     {
-        $data = Disco\Data::loadMovieLens();
-        $recommender = new Disco\Recommender(factors: 20);
+        $data = Data::loadMovieLens();
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
         $this->assertEquals([$recommender->globalMean()], $recommender->predict([['user_id' => 1, 'item_id' => 'New movie']]));
     }
 
     public function testPredictUserRecsConsistent()
     {
-        $data = Disco\Data::loadMovieLens();
-        $recommender = new Disco\Recommender(factors: 20);
+        $data = Data::loadMovieLens();
+        $recommender = new Recommender(factors: 20);
         $recommender->fit($data);
 
         $expected = array_map(fn ($v) => $recommender->userRecs($v['user_id'], itemIds: [$v['item_id']])[0]['score'], array_slice($data, 0, 5));
@@ -240,7 +244,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No training data');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([]);
     }
 
@@ -249,7 +253,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing user_id');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['item_id' => 1, 'rating' => 5]]);
     }
 
@@ -258,7 +262,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing item_id');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'rating' => 5]]);
     }
 
@@ -267,7 +271,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing rating');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 5], ['user_id' => 1, 'item_id' => 2]]);
     }
 
@@ -276,7 +280,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing rating');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 5]], validationSet: [['user_id' => 1, 'item_id' => 2]]);
     }
 
@@ -285,7 +289,7 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Rating must be numeric');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 'invalid']]);
     }
 
@@ -294,22 +298,22 @@ final class RecommenderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Rating must be numeric');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 5]], validationSet: [['user_id' => 1, 'item_id' => 1, 'rating' => 'invalid']]);
     }
 
     public function testNotFit()
     {
-        $this->expectException(Disco\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not fit');
 
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->userRecs(1);
     }
 
     public function testFitMultiple()
     {
-        $recommender = new Disco\Recommender();
+        $recommender = new Recommender();
         $recommender->fit([['user_id' => 1, 'item_id' => 1, 'rating' => 5]]);
         $recommender->fit([['user_id' => 2, 'item_id' => 2]]);
         $this->assertEquals([2], $recommender->userIds());
