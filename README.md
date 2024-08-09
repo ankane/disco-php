@@ -36,7 +36,9 @@ composer install
 Create a recommender
 
 ```php
-$recommender = new Disco\Recommender();
+use Disco\Recommender;
+
+$recommender = new Recommender();
 ```
 
 If users rate items directly, this is known as explicit feedback. Fit the recommender with:
@@ -98,13 +100,15 @@ $recommender->similarUsers($userId);
 Load the data
 
 ```php
-$data = Disco\Data::loadMovieLens();
+use Disco\Data;
+
+$data = Data::loadMovieLens();
 ```
 
 Create a recommender and get similar movies
 
 ```php
-$recommender = new Disco\Recommender(factors: 20);
+$recommender = new Recommender(factors: 20);
 $recommender->fit($data);
 $recommender->itemRecs('Star Wars (1977)');
 ```
@@ -125,7 +129,7 @@ Disco uses high-performance matrix factorization.
 Specify the number of factors and epochs
 
 ```php
-new Disco\Recommender(factors: 8, epochs: 20);
+new Recommender(factors: 8, epochs: 20);
 ```
 
 If recommendations look off, trying changing `factors`. The default is 8, but 3 could be good for some applications and 300 good for others.
