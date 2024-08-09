@@ -16,10 +16,19 @@ Run:
 composer require ankane/disco
 ```
 
-And download the shared library:
+Add scripts to `composer.json` to download the shared library:
+
+```json
+    "scripts": {
+        "post-install-cmd": "Disco\\Library::check",
+        "post-update-cmd": "Disco\\Library::check"
+    }
+```
+
+And run:
 
 ```sh
-composer exec -- php -r "require 'vendor/autoload.php'; Disco\Library::check();"
+composer install
 ```
 
 ## Getting Started
