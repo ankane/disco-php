@@ -19,7 +19,7 @@ composer require ankane/disco
 And download the shared library:
 
 ```sh
-composer exec -- php -r "require 'vendor/autoload.php'; Disco\Library::check(true);"
+composer exec -- php -r "require 'vendor/autoload.php'; Disco\Library::check();"
 ```
 
 ## Getting Started
