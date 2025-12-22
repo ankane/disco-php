@@ -1,4 +1,4 @@
-## 0.2.1 (unreleased)
+## 0.2.1 (2025-12-21)
 
 - Fixed deprecation warnings with PHP 8.5
 
