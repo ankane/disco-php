@@ -57,8 +57,8 @@ class Recommender
         $input = new \Libmf\Matrix();
         foreach ($trainSet as $v) {
             // update maps and build matrix in single pass
-            $u = ($this->userMap[$v['user_id'] ?? null] ??= count($this->userMap));
-            $i = ($this->itemMap[$v['item_id'] ?? null] ??= count($this->itemMap));
+            $u = ($this->userMap[$v['user_id'] ?? ''] ??= count($this->userMap));
+            $i = ($this->itemMap[$v['item_id'] ?? ''] ??= count($this->itemMap));
 
             // save rated
             $this->rated[$u] ??= [];
@@ -69,10 +69,10 @@ class Recommender
         }
 
         // much more efficient than checking every value in another pass
-        if (isset($this->userMap[null])) {
+        if (isset($this->userMap[''])) {
             throw new \InvalidArgumentException('Missing user_id');
         }
-        if (isset($this->itemMap[null])) {
+        if (isset($this->itemMap[''])) {
             throw new \InvalidArgumentException('Missing item_id');
         }
 

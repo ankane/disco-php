@@ -1,3 +1,7 @@
+## 0.2.1 (unreleased)
+
+- Fixed deprecation warnings with PHP 8.5
+
 ## 0.2.0 (2024-06-02)
 
 - Reduced memory for `itemRecs` and `similarUsers`

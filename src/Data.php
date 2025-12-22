@@ -20,7 +20,7 @@ class Data
 
         $movies = [];
         if (($handle = fopen($itemPath, 'r')) !== false) {
-            while (($row = fgetcsv($handle, separator: '|')) !== false) {
+            while (($row = fgetcsv($handle, separator: '|', escape: '')) !== false) {
                 $movies[$row[0]] = mb_convert_encoding($row[1], 'UTF-8', 'ISO-8859-1');
             }
             fclose($handle);
@@ -28,7 +28,7 @@ class Data
 
         $data = [];
         if (($handle = fopen($dataPath, 'r')) !== false) {
-            while (($row = fgetcsv($handle, separator: "\t")) !== false) {
+            while (($row = fgetcsv($handle, separator: "\t", escape: '')) !== false) {
                 $data[] = [
                     'user_id' => intval($row[0]),
                     'item_id' => $movies[$row[1]],
