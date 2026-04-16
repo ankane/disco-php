@@ -1,3 +1,7 @@
+## 0.3.0 (unreleased)
+
+- Dropped support for PHP < 8.2
+
 ## 0.2.1 (2025-12-21)
 
 - Fixed deprecation warnings with PHP 8.5
