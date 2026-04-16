@@ -87,10 +87,13 @@ class Recommender
 
         $evalSet = null;
         if (!is_null($validationSet)) {
+            // TODO fix implicit
+            $unseenU = $this->implicit ? 0 : count($this->userMap);
+            $unseenI = $this->implicit ? 0 : count($this->itemMap);
             $evalSet = new \Libmf\Matrix();
             foreach ($validationSet as $v) {
-                $u = $this->userMap[$v['user_id']] ?? -1;
-                $i = $this->itemMap[$v['item_id']] ?? -1;
+                $u = $this->userMap[$v['user_id']] ?? $unseenU;
+                $i = $this->itemMap[$v['item_id']] ?? $unseenI;
                 $evalSet->push($u, $i, $this->implicit ? 1 : $v['rating']);
             }
         }
