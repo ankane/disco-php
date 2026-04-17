@@ -157,10 +157,37 @@ final class RecommenderTest extends TestCase
             unset($r['rating']);
         }
         $trainSet = array_slice($data, 0, 80000);
-        $validationSet = array_slice($data, 80000);
+        $itemIds = array_flip(array_map(fn ($v) => $v['item_id'], $trainSet));
+        $validationSet = array_filter(array_slice($data, 80000), fn($v) => array_key_exists($v['item_id'], $itemIds));
         $recommender = new Recommender(factors: 20, verbose: false);
         $recommender->fit($trainSet, validationSet: $validationSet);
         $this->assertEqualsWithDelta(0, $recommender->globalMean(), 0.001);
+    }
+
+    public function testValidationSetImplicitNewUser()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Validation set cannot have new users for implicit feedback');
+
+        $data = [
+            ['user_id' => 1, 'item_id' => 1],
+            ['user_id' => 1, 'item_id' => 2]
+        ];
+        $recommender = new Recommender();
+        $recommender->fit($data, validationSet: [['user_id' => 3, 'item_id' => 1]]);
+    }
+
+    public function testValidationSetImplicitNewItem()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Validation set cannot have new items for implicit feedback');
+
+        $data = [
+            ['user_id' => 1, 'item_id' => 1],
+            ['user_id' => 1, 'item_id' => 2]
+        ];
+        $recommender = new Recommender();
+        $recommender->fit($data, validationSet: [['user_id' => 1, 'item_id' => 3]]);
     }
 
     public function testUserRecsItemIds()

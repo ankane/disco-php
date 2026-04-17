@@ -87,13 +87,24 @@ class Recommender
 
         $evalSet = null;
         if (!is_null($validationSet)) {
-            // TODO fix implicit
-            $unseenU = $this->implicit ? 0 : count($this->userMap);
-            $unseenI = $this->implicit ? 0 : count($this->itemMap);
             $evalSet = new \Libmf\Matrix();
             foreach ($validationSet as $v) {
-                $u = $this->userMap[$v['user_id']] ?? $unseenU;
-                $i = $this->itemMap[$v['item_id']] ?? $unseenI;
+                $u = $this->userMap[$v['user_id']] ?? null;
+                $i = $this->itemMap[$v['item_id']] ?? null;
+
+                if ($this->implicit) {
+                    if (is_null($u)) {
+                        throw new \InvalidArgumentException('Validation set cannot have new users for implicit feedback');
+                    }
+
+                    if (is_null($i)) {
+                        throw new \InvalidArgumentException('Validation set cannot have new items for implicit feedback');
+                    }
+                } else {
+                    $u ??= count($this->userMap);
+                    $i ??= count($this->itemMap);
+                }
+
                 $evalSet->push($u, $i, $this->implicit ? 1 : $v['rating']);
             }
         }
