@@ -19,7 +19,7 @@
     },
     "require": {
         "php": ">= 8.2",
-        "ankane/libmf": "^0.1.0"
+        "ankane/libmf": "^0.3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11"
