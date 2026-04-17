@@ -1,5 +1,6 @@
 ## 0.3.0 (unreleased)
 
+- Fixed handling of new users and items in validation set
 - Dropped support for PHP < 8.2
 
 ## 0.2.1 (2025-12-21)
